@@ -1,6 +1,5 @@
 /* ===================================================================
- * Augustine 1.0.0 - Main JS
- *
+ * Mueller 1.0.0 - Main JS
  *
  * ------------------------------------------------------------------- */
 
@@ -8,53 +7,19 @@
 
     'use strict';
 
+    const cfg = {
+        
+        // MailChimp URL
+        mailChimpURL : 'https://facebook.us1.list-manage.com/subscribe/post?u=1abf75f6981256963a47d197a&amp;id=37c6d8f4d6' 
 
-    /* animations
-    * -------------------------------------------------- */
-    const tl = anime.timeline( {
-        easing: 'easeInOutCubic',
-        duration: 800,
-        autoplay: false
-    })
-    .add({
-        targets: '#loader',
-        opacity: 0,
-        duration: 1000,
-        begin: function(anim) {
-            window.scrollTo(0, 0);
-        }
-    })
-    .add({
-        targets: '#preloader',
-        opacity: 0,
-        complete: function(anim) {
-            document.querySelector("#preloader").style.visibility = "hidden";
-            document.querySelector("#preloader").style.display = "none";
-        }
-    })
-    .add({
-        targets: '.s-header',
-        translateY: [-100, 0],
-        opacity: [0, 1]
-    }, '-=200')
-    .add({
-        targets: '.s-intro__bg',
-        opacity: [0, 1],
-        duration: 1000,
-    })
-    .add({
-        targets: ['.animate-on-load'],
-        translateY: [100, 0],
-        opacity: [0, 1],
-        delay: anime.stagger(400)
-    });
-
+    };
 
 
    /* preloader
     * -------------------------------------------------- */
     const ssPreloader = function() {
 
+        const siteBody = document.querySelector('body');
         const preloader = document.querySelector('#preloader');
         if (!preloader) return;
 
@@ -63,63 +28,36 @@
         window.addEventListener('load', function() {
             html.classList.remove('ss-preload');
             html.classList.add('ss-loaded');
-            tl.play();
-        });
 
-    }; // end ssPreloader
-
-
-
-   /* mobile menu
-    * ---------------------------------------------------- */ 
-    const ssMobileMenu = function() {
-
-        const toggleButton = document.querySelector('.s-header__menu-toggle');
-        const mainNavWrap = document.querySelector('.s-header__nav-wrap');
-        const siteBody = document.querySelector('body');
-
-        if (!(toggleButton && mainNavWrap)) return;
-
-        toggleButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            toggleButton.classList.toggle('is-clicked');
-            siteBody.classList.toggle('menu-is-open');
-        });
-
-        mainNavWrap.querySelectorAll('.s-header__nav a').forEach(function(link) {
-
-            link.addEventListener("click", function(e) {
-
-                // at 900px and below
-                if (window.matchMedia('(max-width: 900px)').matches) {
-                    toggleButton.classList.toggle('is-clicked');
-                    siteBody.classList.toggle('menu-is-open');
+            preloader.addEventListener('transitionend', function afterTransition(e) {
+                if (e.target.matches('#preloader'))  {
+                    siteBody.classList.add('ss-show');
+                    e.target.style.display = 'none';
+                    preloader.removeEventListener(e.type, afterTransition);
                 }
             });
         });
 
-        window.addEventListener('resize', function() {
+        // window.addEventListener('beforeunload' , function() {
+        //     siteBody.classList.remove('ss-show');
+        // });
 
-            // above 900px
-            if (window.matchMedia('(min-width: 901px)').matches) {
-                if (siteBody.classList.contains('menu-is-open')) siteBody.classList.remove('menu-is-open');
-                if (toggleButton.classList.contains('is-clicked')) toggleButton.classList.remove('is-clicked');
-            }
-        });
-
-    }; // end ssMobileMenu
+    }; // end ssPreloader
 
 
-
-   /* sticky header
-    * ------------------------------------------------------ */
-    const ssStickyHeader = function() {
+   /* move header
+    * -------------------------------------------------- */
+    const ssMoveHeader = function () {
 
         const hdr = document.querySelector('.s-header');
-        if (!hdr) return;
+        const hero = document.querySelector('#intro');
+        let triggerHeight;
 
-        // const triggerHeight = window.pageYOffset + hdr.getBoundingClientRect().top;
-        const triggerHeight = 1;
+        if (!(hdr && hero)) return;
+
+        setTimeout(function() {
+            triggerHeight = hero.offsetHeight - 170;
+        }, 300);
 
         window.addEventListener('scroll', function () {
 
@@ -131,140 +69,353 @@
                 hdr.classList.remove('sticky');
             }
 
-        });
-
-    }; // end ssStickyHeader
-
-
-
-   /* photoswipe
-    * ----------------------------------------------------- */
-    const ssPhotoswipe = function() {
-
-        const items = [];
-        const pswp = document.querySelectorAll('.pswp')[0];
-        const folioItems = document.querySelectorAll('.folio-item');
-
-        if (!(pswp && folioItems)) return;
-
-        folioItems.forEach(function(folioItem) {
-
-            let folio = folioItem;
-            let thumbLink = folio.querySelector('.folio-item__thumb-link');
-            let title = folio.querySelector('.folio-item__title');
-            let caption = folio.querySelector('.folio-item__caption');
-            let titleText = '<h4>' + title.innerHTML + '</h4>';
-            let captionText = caption.innerHTML;
-            let href = thumbLink.getAttribute('href');
-            let size = thumbLink.dataset.size.split('x'); 
-            let width  = size[0];
-            let height = size[1];
-
-            let item = {
-                src  : href,
-                w    : width,
-                h    : height
+            if (loc > triggerHeight + 20) {
+                hdr.classList.add('offset');
+            } else {
+                hdr.classList.remove('offset');
             }
 
-            if (caption) {
-                item.title = titleText.trim() + captionText.trim();
+            if (loc > triggerHeight + 150) {
+                hdr.classList.add('scrolling');
+            } else {
+                hdr.classList.remove('scrolling');
             }
-
-            items.push(item);
 
         });
 
-        // bind click event
-        folioItems.forEach(function(folioItem, i) {
+    }; // end ssMoveHeader
 
-            let thumbLink = folioItem.querySelector('.folio-item__thumb-link');
 
-            thumbLink.addEventListener('click', function(e) {
+   /* mobile menu
+    * ---------------------------------------------------- */ 
+    const ssMobileMenu = function() {
 
-                e.preventDefault();
+        const toggleButton = document.querySelector('.s-header__menu-toggle');
+        const mainNavWrap = document.querySelector('.s-header__nav');
+        const siteBody = document.querySelector('body');
 
-                let options = {
-                    index: i,
-                    showHideOpacity: true
+        if (!(toggleButton && mainNavWrap)) return;
+
+        toggleButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            toggleButton.classList.toggle('is-clicked');
+            siteBody.classList.toggle('menu-is-open');
+        });
+
+        mainNavWrap.querySelectorAll('.s-header__nav a').forEach(function(link) {
+
+            link.addEventListener("click", function(event) {
+
+                // at 800px and below
+                if (window.matchMedia('(max-width: 800px)').matches) {
+                    toggleButton.classList.toggle('is-clicked');
+                    siteBody.classList.toggle('menu-is-open');
                 }
-
-                // initialize PhotoSwipe
-                let lightBox = new PhotoSwipe(pswp, PhotoSwipeUI_Default, items, options);
-                lightBox.init();
             });
-
         });
 
-    };  // end ssPhotoSwipe
+        window.addEventListener('resize', function() {
+
+            // above 800px
+            if (window.matchMedia('(min-width: 801px)').matches) {
+                if (siteBody.classList.contains('menu-is-open')) siteBody.classList.remove('menu-is-open');
+                if (toggleButton.classList.contains('is-clicked')) toggleButton.classList.remove('is-clicked');
+            }
+        });
+
+    }; // end ssMobileMenu
 
 
-
-   /* animate elements if in viewport
+    /* highlight active menu link on pagescroll
     * ------------------------------------------------------ */
-    const ssAnimateOnScroll = function() {
+    const ssScrollSpy = function() {
 
-        const blocks = document.querySelectorAll('[data-animate-block]');
+        const sections = document.querySelectorAll('.target-section');
 
-        window.addEventListener('scroll', animateOnScroll);
+        // Add an event listener listening for scroll
+        window.addEventListener('scroll', navHighlight);
 
-        function animateOnScroll() {
-
+        function navHighlight() {
+        
+            // Get current scroll position
             let scrollY = window.pageYOffset;
-
-            blocks.forEach(function(current) {
-
-                const viewportHeight = window.innerHeight;
-                const triggerTop = (current.offsetTop + (viewportHeight * .1)) - viewportHeight;
-                const blockHeight = current.offsetHeight;
-                const blockSpace = triggerTop + blockHeight;
-                const inView = scrollY > triggerTop && scrollY <= blockSpace;
-                const isAnimated = current.classList.contains('ss-animated');
-
-                if (inView && (!isAnimated)) {
-
-                    anime({
-                        targets: current.querySelectorAll('[data-animate-el]'),
-                        opacity: [0, 1],
-                        translateY: [100, 0],
-                        delay: anime.stagger(200, {start: 200}),
-                        duration: 600,
-                        easing: 'easeInOutCubic',
-                        begin: function(anim) {
-                            current.classList.add('ss-animated');
-                        }
-                    });
+        
+            // Loop through sections to get height(including padding and border), 
+            // top and ID values for each
+            sections.forEach(function(current) {
+                const sectionHeight = current.offsetHeight;
+                const sectionTop = current.offsetTop - 50;
+                const sectionId = current.getAttribute('id');
+            
+               /* If our current scroll position enters the space where current section 
+                * on screen is, add .current class to parent element(li) of the thecorresponding 
+                * navigation link, else remove it. To know which link is active, we use 
+                * sectionId variable we are getting while looping through sections as 
+                * an selector
+                */
+                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                    document.querySelector('.s-header__nav a[href*=' + sectionId + ']').parentNode.classList.add('current');
+                } else {
+                    document.querySelector('.s-header__nav a[href*=' + sectionId + ']').parentNode.classList.remove('current');
                 }
             });
         }
 
-    }; // end ssAnimateOnScroll
+    }; // end ssScrollSpy
 
+
+   /* masonry
+    * ------------------------------------------------------ */
+     const ssMasonry = function() {
+
+        const containerBricks = document.querySelector('.bricks-wrapper');
+        if (!containerBricks) return;
+
+        imagesLoaded(containerBricks, function() {
+
+            const msnry = new Masonry(containerBricks, {
+                itemSelector: '.entry',
+                columnWidth: '.grid-sizer',
+                percentPosition: true,
+                resize: true
+            });
+
+        });
+
+    }; // end ssMasonry
 
 
    /* swiper
     * ------------------------------------------------------ */ 
     const ssSwiper = function() {
 
-        const mySwiper = new Swiper('.swiper', {
+        const testimonialsSwiper = new Swiper('.s-testimonials__slider', {
 
             slidesPerView: 1,
-            effect: 'slide',
-            spaceBetween: 160,
-            centeredSlides: true,
-            speed: 1000,
-            navigation: {
-                nextEl: ".testimonial-slider__next",
-                prevEl: ".testimonial-slider__prev",
-            },
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
+            },
+            breakpoints: {
+                // when window width is > 400px
+                401: {
+                    slidesPerView: 1,
+                    spaceBetween: 20
+                },
+                // when window width is > 800px
+                801: {
+                    slidesPerView: 2,
+                    spaceBetween: 50
+                },
+                // when window width is > 1180px
+                1181: {
+                    slidesPerView: 2,
+                    spaceBetween: 100
+                }
             }
-
         });
 
     }; // end ssSwiper
 
+
+   /* mailchimp form
+    * ---------------------------------------------------- */ 
+    const ssMailChimpForm = function() {
+
+        const mcForm = document.querySelector('#mc-form');
+
+        if (!mcForm) return;
+
+        // Add novalidate attribute
+        mcForm.setAttribute('novalidate', true);
+
+        // Field validation
+        function hasError(field) {
+
+            // Don't validate submits, buttons, file and reset inputs, and disabled fields
+            if (field.disabled || field.type === 'file' || field.type === 'reset' || field.type === 'submit' || field.type === 'button') return;
+
+            // Get validity
+            let validity = field.validity;
+
+            // If valid, return null
+            if (validity.valid) return;
+
+            // If field is required and empty
+            if (validity.valueMissing) return 'Please enter an email address.';
+
+            // If not the right type
+            if (validity.typeMismatch) {
+                if (field.type === 'email') return 'Please enter a valid email address.';
+            }
+
+            // If pattern doesn't match
+            if (validity.patternMismatch) {
+
+                // If pattern info is included, return custom error
+                if (field.hasAttribute('title')) return field.getAttribute('title');
+
+                // Otherwise, generic error
+                return 'Please match the requested format.';
+            }
+
+            // If all else fails, return a generic catchall error
+            return 'The value you entered for this field is invalid.';
+
+        };
+
+        // Show error message
+        function showError(field, error) {
+
+            // Get field id or name
+            let id = field.id || field.name;
+            if (!id) return;
+
+            let errorMessage = field.form.querySelector('.mc-status');
+
+            // Update error message
+            errorMessage.classList.remove('success-message');
+            errorMessage.classList.add('error-message');
+            errorMessage.innerHTML = error;
+
+        };
+
+        // Display form status (callback function for JSONP)
+        window.displayMailChimpStatus = function (data) {
+
+            // Make sure the data is in the right format and that there's a status container
+            if (!data.result || !data.msg || !mcStatus ) return;
+
+            // Update our status message
+            mcStatus.innerHTML = data.msg;
+
+            // If error, add error class
+            if (data.result === 'error') {
+                mcStatus.classList.remove('success-message');
+                mcStatus.classList.add('error-message');
+                return;
+            }
+
+            // Otherwise, add success class
+            mcStatus.classList.remove('error-message');
+            mcStatus.classList.add('success-message');
+        };
+
+        // Submit the form 
+        function submitMailChimpForm(form) {
+
+            let url = cfg.mailChimpURL;
+            let emailField = form.querySelector('#mce-EMAIL');
+            let serialize = '&' + encodeURIComponent(emailField.name) + '=' + encodeURIComponent(emailField.value);
+
+            if (url == '') return;
+
+            url = url.replace('/post?u=', '/post-json?u=');
+            url += serialize + '&c=displayMailChimpStatus';
+
+            // Create script with url and callback (if specified)
+            var ref = window.document.getElementsByTagName( 'script' )[ 0 ];
+            var script = window.document.createElement( 'script' );
+            script.src = url;
+
+            // Create global variable for the status container
+            window.mcStatus = form.querySelector('.mc-status');
+            window.mcStatus.classList.remove('error-message', 'success-message')
+            window.mcStatus.innerText = 'Submitting...';
+
+            // Insert script tag into the DOM
+            ref.parentNode.insertBefore( script, ref );
+
+            // After the script is loaded (and executed), remove it
+            script.onload = function () {
+                this.remove();
+            };
+
+        };
+
+        // Check email field on submit
+        mcForm.addEventListener('submit', function (event) {
+
+            event.preventDefault();
+
+            let emailField = event.target.querySelector('#mce-EMAIL');
+            let error = hasError(emailField);
+
+            if (error) {
+                showError(emailField, error);
+                emailField.focus();
+                return;
+            }
+
+            submitMailChimpForm(this);
+
+        }, false);
+
+    }; // end ssMailChimpForm
+
+
+   /* Lightbox
+    * ------------------------------------------------------ */
+    const ssLightbox = function() {
+
+        // video lightbox
+        const videoLightbox = function() {
+
+            const videoLink = document.querySelector('.s-intro__content-video-btn');
+            if (!videoLink) return;
+    
+            videoLink.addEventListener('click', function(event) {
+    
+                const vLink = this.getAttribute('href');
+                const iframe = "<iframe src='" + vLink + "' frameborder='0'></iframe>";
+    
+                event.preventDefault();
+    
+                const instance = basicLightbox.create(iframe);
+                instance.show()
+    
+            });
+    
+        };
+
+        // portfolio lightbox
+        const folioLightbox = function() {
+
+            const folioLinks = document.querySelectorAll('.brick .entry__link');
+            const modals = [];
+    
+            folioLinks.forEach(function(link) {
+                let modalbox = link.getAttribute('href');
+                let instance = basicLightbox.create(
+                    document.querySelector(modalbox),
+                    {
+                        onShow: function(instance) {
+                            //detect Escape key press
+                            document.addEventListener("keydown", function(event) {
+                                event = event || window.event;
+                                if (event.key === "Escape") {
+                                    instance.close();
+                                }
+                            });
+                        }
+                    }
+                )
+                modals.push(instance);
+            });
+    
+            folioLinks.forEach(function(link, index) {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    modals[index].show();
+                });
+            });
+    
+        };
+
+        videoLightbox();
+        folioLightbox();
+
+    }; // ssLightbox
 
 
    /* alert boxes
@@ -275,10 +426,10 @@
   
         boxes.forEach(function(box){
 
-            box.addEventListener('click', function(e) {
-                if (e.target.matches('.alert-box__close')) {
-                    e.stopPropagation();
-                    e.target.parentElement.classList.add('hideit');
+            box.addEventListener('click', function(event) {
+                if (event.target.matches('.alert-box__close')) {
+                    event.stopPropagation();
+                    event.target.parentElement.classList.add('hideit');
 
                     setTimeout(function(){
                         box.style.display = 'none';
@@ -290,8 +441,7 @@
     }; // end ssAlertBoxes
 
 
-
-    /* back to top
+    /* Back to Top
     * ------------------------------------------------------ */
     const ssBackToTop = function() {
 
@@ -312,7 +462,6 @@
         });
 
     }; // end ssBackToTop
-
 
 
    /* smoothscroll
@@ -358,17 +507,18 @@
     }; // end ssMoveTo
 
 
-
-   /* initialize
+   /* Initialize
     * ------------------------------------------------------ */
     (function ssInit() {
 
         ssPreloader();
+        ssMoveHeader();
         ssMobileMenu();
-        ssStickyHeader();
-        ssPhotoswipe();
-        ssAnimateOnScroll();
+        ssScrollSpy();
+        ssMasonry();
         ssSwiper();
+        ssMailChimpForm();
+        ssLightbox();
         ssAlertBoxes();
         ssBackToTop();
         ssMoveTo();

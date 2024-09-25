@@ -2,11 +2,12 @@
 
 DESCRIPTION:
 
-AUGUSTINE is a clean and minimalist one-page personal website template for creative individuals 
-and professionals. It is the perfect solution for creating a striking online presence where you 
-can highlight your best works and showcase your skills and credentials. AUGUSTINE comes with all 
-the essential website components and features for creating an outstanding and great-looking 
-online resume that would grab everyone's attention.
+MUELLER is a modern and creative free agency website template. With Mueller, you can immediately 
+start creating a striking online presence that would capture everyone's attention. There is no 
+need to start from the ground up. This template includes essential features that allow you to 
+creatively introduce your business, highlight your services, showcase your best works, and much 
+more. Mueller is the perfect tool for creating a stunning website that makes your agency business 
+stand out!
 
 ==================================================================================================
 
@@ -70,7 +71,7 @@ Also, keep your Paypal receipt as proof of payment and your good to go.
 
 SUPPORT:
     
-Since AUGUSTINE is distributed for free, support is not offered. AUGUSTINE is coded according 
+Since MUELLER is distributed for free, support is not offered. MUELLER is coded according 
 to current web standards and we did our best to make the template easy to use and modify.
 If you have minimum web development experience, you can easily modify the template. 
 However, If you're still new to HTML and CSS, I suggest that you visit the 
@@ -107,24 +108,24 @@ I've used the following resources as listed.
 
 Fonts:
  - Inter Font (https://fonts.google.com/specimen/Inter)
- - Castoro Font (https://fonts.google.com/specimen/Castoro)
+ - Manrope Font (https://fonts.google.com/specimen/Manrope)
 
 Icons:
  - Boxicons (https://boxicons.com/)
 
 Stock Photos and Graphics:
  - Unsplash.com (https://unsplash.com/)
+ - LogoToUse.com (https://www.logotouse.com/)
  
 Javascript Files:
  - Swiper (https://swiperjs.com/)
  - MoveTo.js (https://github.com/hsnaydd/moveTo)
  - Prism.js (https://prismjs.com/)
- - Anime JS (https://animejs.com/)
  - PhotoSwipe (https://photoswipe.com/)
 
 -------------------------------------------------------------------------------------------------------
 
 
-Thanks for downloading from Styleshout :)
+Thanks for downloading from StyleShout :)
 
 
